@@ -1,6 +1,7 @@
 import http from "http";
 import Websocket from 'ws';
 import express from "express";
+import { SocketAddress } from "net";
 
 
 const app = express();
@@ -25,13 +26,16 @@ const server = http.createServer(app);
 const wss = new Websocket.Server({ server });
 
 // server.js에서 여기 handleConnection 의 socket 은 연결된 브라우저를 뜻함.
-function handleConnection(socket) {
-    console.log(socket)
-}
-
 // socket? 연결된 어떤 사람인 것, 연결된 브라우와의 연락(contact) 라인
 // socket 은 나(서버)와 브라우져 사이의 연결 역할을 수행
-wss.on("connection", handleConnection)
+wss.on("connection", (socket) => {
+    console.log("Connected to Browser O ");
+    socket.on("close", () => console.log("Disconnected from the Browser X"));
+    socket.on("message", (message) => {
+        console.log(message.toString());
+    });
+    socket.send("hello!!!");
+});
 
 // http 서버에서 access를 하려는 것, http 서버 위에서 ws를 구동
 server.listen(3000, handleListen);
