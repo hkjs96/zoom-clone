@@ -33,10 +33,19 @@ const sockets = [];
 // socket 은 나(서버)와 브라우져 사이의 연결 역할을 수행
 wss.on("connection", (socket) => {
     sockets.push(socket);
+    socket["nickname"] = "익명";
     console.log("Connected to Browser O ");
     socket.on("close", () => console.log("Disconnected from the Browser X"));
-    socket.on("message", (message) => {
-        sockets.forEach(aSocket => aSocket.send(message.toString()));
+    socket.on("message", (msg) => {
+        const message = JSON.parse(msg);
+        switch (message.type) {
+            case "new_message":
+                sockets.forEach((aSocket) => 
+                    aSocket.send(`${socket.nickname}: ${message.payload}`)
+                );
+            case "nickname":
+                socket["nickname"] = message.payload;
+         }
     });
 });
 
