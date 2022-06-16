@@ -1,8 +1,6 @@
 import http from "http";
-import Websocket from 'ws';
 import express from "express";
-import { SocketAddress } from "net";
-
+import SocketIO from "socket.io";
 
 const app = express();
 
@@ -18,7 +16,24 @@ app.get("/*", (_, res) => res.redirect("/"));
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 
 // http 서버 실행
-const server = http.createServer(app);
+const httpServer = http.createServer(app);
+const wsServer = SocketIO(httpServer);
+
+wsServer.on("connection", socket => {
+    
+    // socket.on("원하는 이벤트") 어느 이벤트든 상관 없음 room, enter_room 등등 
+    // 서버에서 done 이라는 함수를 호출, 이 함수는 이름은 맘대로 정할 수 있으며(fn, func cb ...),
+    // 서버가 done을 실행하면 백엔드에서 실행되지 않고 프론트에서 함수가 실행된다.
+    socket.on("room", (msg, done) => { 
+        console.log(msg);
+        setTimeout(() => {
+            done("hello from the back end!"); // back에서 실행되면 심각한 보안 문제가 발생한다.
+                    // 어떤 데이터를 보낼지 모르기 떄문에 
+        }, 15000);
+    });
+});
+
+/*
 // wss 서버 실행
 // 결과 적으로 두개 실행 가능..
 // ws, http 두개를 실행하지 않아도 되지만
@@ -48,9 +63,10 @@ wss.on("connection", (socket) => {
          }
     });
 });
+*/
 
 // http 서버에서 access를 하려는 것, http 서버 위에서 ws를 구동
-server.listen(3000, handleListen);
+httpServer.listen(3000, handleListen);
 
 
 
