@@ -20,16 +20,15 @@ const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
 wsServer.on("connection", socket => {
-    
+    socket.onAny((event) => {
+        console.log(`Socket Event: ${event}`);
+    });
     // socket.on("원하는 이벤트") 어느 이벤트든 상관 없음 room, enter_room 등등 
     // 서버에서 done 이라는 함수를 호출, 이 함수는 이름은 맘대로 정할 수 있으며(fn, func cb ...),
     // 서버가 done을 실행하면 백엔드에서 실행되지 않고 프론트에서 함수가 실행된다.
     socket.on("room", (msg, done) => { 
-        console.log(msg);
-        setTimeout(() => {
-            done("hello from the back end!"); // back에서 실행되면 심각한 보안 문제가 발생한다.
-                    // 어떤 데이터를 보낼지 모르기 떄문에 
-        }, 15000);
+        socket.join(msg); // join 으로 room에 입장할 수 있다.
+        done();
     });
 });
 

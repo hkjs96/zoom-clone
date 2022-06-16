@@ -18,3 +18,10 @@ Zoom CLone using NodeJS, WebRTC and Websockets.
 한번에 여러개 보낼수 있음.
 
 3. 
+
+# 
+- socket.join([]) [socket.join(room)](https://socket.io/docs/v4/server-api/#socketjoinroom)
+  room에 입장 가능
+- socket.leave() [socket.leave(room)](https://socket.io/docs/v4/server-api/#socketleaveroom)
+  room에서 떠나기
+- socket.to() 방 전체에 메시지 보내기
